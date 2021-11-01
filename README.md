@@ -27,7 +27,6 @@ and <a href="https://github.com/pyrogram/pyrogram">Pyrogram</a>
     <li>Less environment variables</li>
 </ul>
 
-
 <h3>TODO</h3>
 <ul>
     <li>Make help command</li>

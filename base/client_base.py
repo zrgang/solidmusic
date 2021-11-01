@@ -1,4 +1,3 @@
-import konfig
 from konfig import config
 from pyrogram import Client
 from pytgcalls import PyTgCalls
