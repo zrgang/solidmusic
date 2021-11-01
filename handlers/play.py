@@ -1,7 +1,7 @@
 from pyrogram import Client, filters, types
-from solidAPI import emoji
+from solidAPI import emoji, get_message as gm
 
-from utils.functions import group_only
+from utils.functions import group_only, res_music
 from utils.pyro_utils import music_result, yt_search
 from base.player import player
 
@@ -21,13 +21,13 @@ async def play_(client: Client, message: types.Message):
     bot_username = (await client.get_me()).username
     query = " ".join(message.command[1:])
     user_id = message.from_user.id
+    chat_id = message.chat.id
     try:
         yts = yt_search(query)
     except IndexError:
-        return await message.reply("give me some title")
-    proc = await message.reply(f"{emoji.MAGNIFYING_GLASS_TILTED_LEFT} `searching...`")
+        return await message.reply(gm(chat_id, "give_me_title"))
+    proc = await message.reply(gm(chat_id, "searching"))
     cache = []
-    chat_id = message.chat.id
     music_result[chat_id] = []
     for count, j in enumerate(yts, start=1):
         cache.append(j)
@@ -37,14 +37,8 @@ async def play_(client: Client, message: types.Message):
         if count == len(yts):
             music_result[chat_id].append(cache)
     yts.clear()
-    results = "\n"
     k = 0
-    for i in music_result[chat_id][0]:
-        k += 1
-        results += f"{k}. [{i['title'][:35]}...]({i['url']})\n"
-        results += f"┣ {emoji.LIGHT_BULB} duration - {i['duration']}\n"
-        results += f"┣ {emoji.FIRE} [More Information](https://t.me/{bot_username}?start=ytinfo_{i['id']})\n"
-        results += "┗ powered by solid project\n\n"
+    results = res_music(k, music_result[chat_id][0], bot_username, chat_id)
 
     temps = []
     keyboards = []
@@ -65,8 +59,10 @@ async def play_(client: Client, message: types.Message):
                 keyboards[0],
                 keyboards[1],
                 [
-                    button_keyboard(f"next {emoji.RIGHT_ARROW}", f"next|{user_id}"),
-                    button_keyboard(f"close {emoji.WASTEBASKET}", f"close|{user_id}"),
+                    button_keyboard(f"{emoji.RIGHT_ARROW}", f"next|{user_id}"),
+                ],
+                [
+                    button_keyboard(f"{gm(chat_id, 'close_btn_name')} {emoji.WASTEBASKET}", f"close|{user_id}"),
                 ],
             ]
         ),
@@ -85,10 +81,12 @@ async def playlist_(client: Client, message: types.Message):
         mention_current_user = (await message.chat.get_member(current_user_id)).user.mention
         if current and not queued:
             return await reply(
-                f"now playing\n"
-                f"📌 title: [{current['title']}](https://t.me/{bot_username}?start=ytinfo_{current['yt_id']})\n"
-                f"⏱ duration: {current['duration']}\n"
-                f"🙌 requested by: {mention_current_user}"
+                f"{gm(chat_id, 'now_playing')}\n"
+                f"📌 {gm(chat_id, 'yt_title')}:"
+                f" [{current['title']}](https://t.me/{bot_username}?start=ytinfo_{current['yt_id']})\n"
+                f"⏱ {gm(chat_id, 'duration')}: {current['duration']}\n"
+                f"🙌 {gm(chat_id, 'req_by')}: {mention_current_user}",
+                disable_web_page_preview=True
             )
         if current and queued:
             ques = "\n"
@@ -98,17 +96,19 @@ async def playlist_(client: Client, message: types.Message):
                 req_by = i["user_id"]
                 yt_id = i["yt_id"]
                 mention_user = (await message.chat.get_member(req_by)).user.mention
-                ques += f"📌 title: [{title}](https://t.me/{bot_username}?start=ytinfo_{yt_id})\n"
-                ques += f"⏱ duration: {duration}\n"
-                ques += f"🙌 requested by: {mention_user}\n\n"
+                ques += f"📌 {gm(chat_id, 'yt_title')}:"
+                ques += f" [{title}](https://t.me/{bot_username}?start=ytinfo_{yt_id})\n"
+                ques += f"⏱ {gm(chat_id, 'duration')}: {duration}\n"
+                ques += f"🙌 {gm(chat_id, 'req_by')}: {mention_user}\n\n"
             return await reply(
-                f"now playing\n"
-                f"📌 title: [{current['title']}](https://t.me/{bot_username}?start=ytinfo_{current['yt_id']})\n"
-                f"⏱ duration: {current['duration']}\n"
-                f"🙌 requested by: {mention_current_user}\n\n\n"
-                f"💬 in queue\n{ques}",
+                f"{gm(chat_id, 'now_playing')}\n"
+                f"📌 {gm(chat_id, 'yt_title')}: "
+                f"[{current['title']}](https://t.me/{bot_username}?start=ytinfo_{current['yt_id']})\n"
+                f"⏱ {gm(chat_id, 'duration')}: {current['duration']}\n"
+                f"🙌 {gm(chat_id, 'req_by')}: {mention_current_user}\n\n\n"
+                f"💬 {gm(chat_id, 'playlist')}\n{ques}",
                 disable_web_page_preview=True
             )
         return
     except KeyError:
-        return await reply("not playing")
+        return await reply(gm(chat_id, 'not_playing'))

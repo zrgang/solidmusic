@@ -1,3 +1,4 @@
+import konfig
 from konfig import config
 from pyrogram import Client
 from pytgcalls import PyTgCalls
@@ -16,4 +17,4 @@ user = Client(
     api_hash=config.API_HASH,
 )
 
-call_py = PyTgCalls(user)
+call_py = PyTgCalls(user) if not config.MULTI_THREAD else PyTgCalls(user, multi_thread=True)

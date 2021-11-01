@@ -1,6 +1,7 @@
 from pyrogram import Client, filters, types
 
 from solidAPI.sudo import add_sudo, get_sudos, del_sudo, put_sudo
+from solidAPI import get_message
 
 from utils.decorators import authorized_only
 from utils.functions import group_only
@@ -29,23 +30,23 @@ async def update_sudo(message: types.Message, chat_id: int, sudo_id: int, status
                 x = put_sudo(chat_id, sudo_id)
                 status = x["status"]
                 if status == 200:
-                    return f"{mention_user} added to our database in this chat."
+                    return get_message(chat_id, "added_sudo")
                 if status == 400:
-                    return f"{mention_user} already added to be a sudo in this chat."
+                    return get_message(chat_id, "already_become_sudo")
                 return
             return
         x = add_sudo(chat_id, sudo_id)
         if x == 200:
-            return f"{mention_user} added to our database in this chat."
+            return get_message(chat_id, "added_sudo")
         if x == 400:
-            return f"{mention_user} already sudo user in here."
+            return get_message(chat_id, "already_become_sudo")
         return
     if status == "delete":
         x = del_sudo(chat_id, sudo_id)
         if x == 200:
-            return f"{mention_user} deleted from sudo."
+            return get_message(chat_id, "deleted_sudo")
         if x == 404:
-            return f"{mention_user} already deleted from this chat"
+            return get_message(chat_id, "already_deleted_sudo")
         return
 
 

@@ -16,7 +16,7 @@ async def change_lang(_, message: Message):
     except IndexError:
         lang = ""
     if len(lang) > 2 or len(lang) == 1:
-        await message.reply("use the international format (2 characters)")
+        await message.reply(get_message(message.chat.id, "error_lang_cmd"))
         return
     if not lang:
         temp = []
@@ -31,7 +31,7 @@ async def change_lang(_, message: Message):
             if count == len(kode):
                 keyboard.append(temp)
         await message.reply(
-            "this is all language that supported with this bot",
+            get_message(message.chat.id, "supported_lang"),
             reply_markup=InlineKeyboardMarkup(keyboard),
         )
     if len(lang) == 2:
@@ -40,6 +40,6 @@ async def change_lang(_, message: Message):
             if x == 200:
                 await message.reply(get_message(message.chat.id, "lang_changed"))
             elif x == 404:
-                await message.reply("can't change lang, contact owner")
+                await message.reply(get_message(message.chat.id, "error_change_lang"))
         else:
-            await message.reply("this lang isn't supported")
+            await message.reply(get_message(message.chat.id, "not_supported_lang"))

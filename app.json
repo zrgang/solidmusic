@@ -20,6 +20,10 @@
     "BOT_TOKEN": {
       "description": "A bot token from @BotFather",
       "required": true
+    },
+    "MULTI_THREAD": {
+      "description": "Beta feature of PyTgCalls, set this to True if you want to use this feature",
+      "required": false
     }
   },
   "buildpacks": [

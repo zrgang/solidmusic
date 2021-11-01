@@ -2,6 +2,8 @@ from base.player import player
 
 from pyrogram import types, filters, Client
 
+from solidAPI import get_message as gm
+
 from utils.decorators import authorized_only
 from utils.functions import group_only
 
@@ -10,14 +12,14 @@ from utils.functions import group_only
 @authorized_only
 async def pause_(_, message: types.Message):
     await player.change_status("pause", message.chat.id)
-    await message.reply("paused")
+    await message.reply(gm(message.chat.id, "track_paused"))
 
 
 @Client.on_message(filters.command("resume") & group_only)
 @authorized_only
 async def resume_(_, message: types.Message):
     await player.change_status("resume", message.chat.id)
-    await message.reply("resumed")
+    await message.reply(gm(message.chat.id, "track_resumed"))
 
 
 @Client.on_message(filters.command("skip") & group_only)
@@ -39,4 +41,4 @@ async def end_(_, msg: types.Message):
 async def change_vol_(_, message: types.Message):
     vol = int("".join(message.command[1]))
     await player.change_vol(message.chat.id, vol)
-    await message.reply(f"volume changed to {vol}%")
+    await message.reply(gm(message.chat.id, "vol_changed").format(vol))

@@ -4,6 +4,7 @@ from pyrogram.raw.functions.phone import CreateGroupCall
 from pytgcalls.exceptions import GroupCallNotFound
 from pytgcalls.types import Update
 from pytgcalls.types.input_stream import AudioPiped
+from solidAPI import get_message
 
 from utils.functions import get_audio_link
 
@@ -67,9 +68,9 @@ class CallBase:
             query = playlist[chat_id][0]["uri"]
             title = playlist[chat_id][0]["title"]
             await self.stream_change(chat_id, query)
-            return f"skipped track, and playing {title}"
+            return get_message(chat_id, "track_skipped").format(query)
         if not playlist:
-            return "not playlist"
+            return get_message(chat_id, "no_playlists")
 
     async def end_stream(self, chat_id):
         playlist = self._playlist
@@ -78,9 +79,9 @@ class CallBase:
             if call.get_call(chat_id):
                 await self.leave_group_call(chat_id)
                 del playlist[chat_id]
-                return "ended"
+                return get_message(chat_id, "track_ended")
         except GroupCallNotFound:
-            return "not streaming"
+            return get_message(chat_id, "not_playing")
 
     def send_playlist(self, chat_id: int):
         playlist = self._playlist

@@ -2,6 +2,7 @@ from typing import Callable
 
 from pyrogram import types, Client
 from solidAPI.sudo import get_sudos
+from solidAPI import get_message as gm
 
 
 def authorized_only(func: Callable) -> Callable:
@@ -17,7 +18,7 @@ def authorized_only(func: Callable) -> Callable:
             if person.status in ["creator", "administrator"]:
                 return await func(client, message)
             if person.status not in ["creator", "administrator", get_sudos(message.chat.id)]:
-                return await message.reply("you can't do this command.")
+                return await message.reply(gm(message.chat.id, "not_allowed"))
         except AttributeError:
             if person.is_anonymous:
                 return await func(client, message)
@@ -32,7 +33,7 @@ def admins_only(func: Callable) -> Callable:
             if person.status in ["creator", "administrator"]:
                 return await func(client, message)
             if person.status not in ["creator", "administrator"]:
-                return await message.reply("you can't use this command.")
+                return await message.reply(gm(message.chat.id, "not_allowed"))
         except AttributeError:
             if person.is_anonymous:
                 return await func(client, message)

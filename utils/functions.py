@@ -1,5 +1,6 @@
 import requests
-from pyrogram import filters
+from pyrogram import filters, emoji
+from solidAPI import get_message as gm
 import pafy
 
 group_only = filters.group & ~filters.private & ~filters.edited & ~filters.forwarded & ~filters.via_bot
@@ -41,3 +42,14 @@ def download_yt_thumbnails(thumb_url, user_id):
         for chunk in r.iter_content(1024):
             file.write(chunk)
     return f"search/thumb{user_id}.jpg"
+
+
+def res_music(k: int, music: list, bot_username: str, chat_id: int):
+    results = "\n"
+    for i in music:
+        k += 1
+        results += f"{k}. [{i['title'][:35]}...]({i['url']})\n"
+        results += f"┣ {emoji.LIGHT_BULB} {gm(chat_id, 'duration')} - {i['duration']}\n"
+        results += f"┣ {emoji.FIRE} [{gm(chat_id, 'more_info')}](https://t.me/{bot_username}?start=ytinfo_{i['id']})\n"
+        results += f"┗ {gm(chat_id, 'powered_by')}\n\n"
+    return results

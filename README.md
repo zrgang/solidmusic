@@ -1,4 +1,4 @@
-<h2 align="center">Telegram Streamer Bot </h2>
+<h2 align="center">Telegram Stream Bot </h2>
 <p>
 Telegram bot for stream music on telegram, 
 powered by <a href="https://github.com/pytgcalls/pytgcalls">PyTgCalls</a>
@@ -22,7 +22,20 @@ and <a href="https://github.com/pyrogram/pyrogram">Pyrogram</a>
 <ul>
     <li>Playlist features</li>
     <li>No lag</li>
+    <li>Multi Language</li>
+    <li>Lightweight code</li>
+    <li>Less environment variables</li>
 </ul>
+
+
+<h3>TODO</h3>
+<ul>
+    <li>Make help command</li>
+    <li>Add custom link for group and channel suppor</li>
+</ul>
+
+<h4>Note</h4>
+<code>Please help me to make a help command, just make a pull requests, thanks.</code>
 
 <h3>Deploy to Heroku </h3>
 <div>

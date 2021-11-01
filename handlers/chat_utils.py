@@ -5,6 +5,7 @@ from pyrogram.types import ChatMemberUpdated, Message
 
 from base.client_base import user
 from solidAPI.chat import add_chat, del_chat
+from solidAPI import get_message as gm
 
 
 @Client.on_chat_member_updated(filters=filters.group)
@@ -27,7 +28,7 @@ async def on_bot_kicked(client: Client, msg: Message):
     members = msg.left_chat_member
     if members.id == bot_id:
         del_chat(chat_id)
-        await user.send_message(chat_id, "bot left from chat, assistant left this chat too.")
+        await user.send_message(chat_id, gm(chat_id, "bot_leave_from_chat"))
         await asyncio.sleep(3)
         await user.leave_chat(chat_id)
         return

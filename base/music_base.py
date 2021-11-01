@@ -5,7 +5,7 @@ from pyrogram.errors import FloodWait
 from pytgcalls import StreamType
 from pytgcalls.exceptions import NoActiveGroupCall
 from pytgcalls.types.input_stream import AudioPiped
-from solidAPI import add_chat, get_message
+from solidAPI import add_chat, get_message as gm
 
 from utils.functions import get_audio_link
 
@@ -62,32 +62,34 @@ class MusicBase(CallBase):
         bot_username = (await self._bot.get_me()).username
         if not playlist:
             try:
-                y = await cb.edit_message_text(get_message(chat_id, "process"))
+                y = await cb.edit_message_text(gm(chat_id, "process"))
             except KeyError:
                 add_chat(chat_id, lang)
-                y = await cb.edit_message_text(get_message(chat_id, "process"))
+                y = await cb.edit_message_text(gm(chat_id, "process"))
             audio_url = get_audio_link(yt_url)
             try:
                 await self._set_play(
                     chat_id, title, audio_url, user_id, duration, yt_url, yt_id
                 )
                 await y.edit(
-                    "now playing\n"
-                    f"📌 title: [{title}](https://t.me/{bot_username}?start=ytinfo_{yt_id})\n"
-                    f"⏱ duration: {duration}\n"
-                    f"🙌 requested by: {user.mention}"
+                    f"{gm(chat_id, 'now_playing')}\n"
+                    f"📌 {gm(chat_id, 'yt_title')}: [{title}](https://t.me/{bot_username}?start=ytinfo_{yt_id})\n"
+                    f"⏱ {gm(chat_id, 'duration')}: {duration}\n"
+                    f"🙌 {gm(chat_id, 'req_by')}: {user.mention}",
+                    disable_web_page_preview=True
                 )
             except FloodWait as e:
-                await y.edit(f"getting floodwait, bot sleeping for {e.x} seconds")
+                await y.edit(gm(chat_id, "error_flood").format(e.x))
                 await asyncio.sleep(e.x)
                 await self._set_play(
                     chat_id, title, audio_url, user_id, duration, yt_url, yt_id
                 )
                 await y.edit(
-                    "now playing\n"
-                    f"📌 title: [{title}](https://t.me/{bot_username}?start=ytinfo_{yt_id})\n"
-                    f"⏱ duration: {duration}\n"
-                    f"🙌 requested by: {user.mention}"
+                    f"{gm(chat_id, 'now_playing')}\n"
+                    f"📌 {gm(chat_id, 'yt_title')}: [{title}](https://t.me/{bot_username}?start=ytinfo_{yt_id})\n"
+                    f"⏱ {gm(chat_id, 'duration')}: {duration}\n"
+                    f"🙌 {gm(chat_id, 'req_by')}: {user.mention}",
+                    disable_web_page_preview=True
                 )
         elif len(playlist[chat_id]) >= 1:
             playlist[chat_id].extend(
@@ -101,6 +103,6 @@ class MusicBase(CallBase):
                     }
                 ]
             )
-            y = await cb.edit_message_text("queued")
+            y = await cb.edit_message_text(gm(chat_id, "track_queued"))
             await asyncio.sleep(5)
             return await y.delete()
